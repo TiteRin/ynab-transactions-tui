@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Un client **TUI (Terminal User Interface)** en Node.js/TypeScript pour interagir avec l’API [YNAB](https://api.youneedabudget.com/).   L’objectif initial est de **lister et gérer les transactions non \"cleared\"** directement depuis le terminal.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx src/cli.tsx",
+    "test": "vitest",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -27,7 +30,11 @@
     "@types/react": "^19.1.12",
     "ink-testing-library": "^4.0.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
+  },
+  "ts-node": {
+    "esm": true
   }
 }
