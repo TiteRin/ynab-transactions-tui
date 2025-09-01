@@ -1,0 +1,33 @@
+{
+  "name": "ynab-transactions",
+  "version": "1.0.0",
+  "description": "Un client **TUI (Terminal User Interface)** en Node.js/TypeScript pour interagir avec l’API [YNAB](https://api.youneedabudget.com/).   L’objectif initial est de **lister et gérer les transactions non \"cleared\"** directement depuis le terminal.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TiteRin/ynab-transactions-tui.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TiteRin/ynab-transactions-tui/issues"
+  },
+  "homepage": "https://github.com/TiteRin/ynab-transactions-tui#readme",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "ink": "^6.2.3",
+    "react": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.12",
+    "ink-testing-library": "^4.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
