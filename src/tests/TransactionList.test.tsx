@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'ink-testing-library';
 import { describe, it, expect } from 'vitest';
 import { TransactionList } from '../components/TransactionList.js';
-import { Transaction } from '../types/Transaction.js';
+import type { Transaction } from '../types/Transaction.js';
 import { Amount } from '../types/Amount.js';
 
 describe('TransactionList', () => {

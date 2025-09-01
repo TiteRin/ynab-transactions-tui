@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { Transaction } from '../types/Transaction.js';
+import type { Transaction } from '../types/Transaction.js';
 
 interface TransactionListProps {
   transactions: Transaction[];

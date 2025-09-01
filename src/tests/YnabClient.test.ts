@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { YnabClient } from '../api/YnabClient.js';
-import { Transaction } from '../types/Transaction.js';
+import type { Transaction } from '../types/Transaction.js';
 import { Amount } from '../types/Amount.js';
 
 // Mock axios
@@ -25,26 +25,77 @@ describe('YnabClient', () => {
               {
                 id: 'txn-1',
                 date: '2025-08-20',
-                payee_name: 'Coffee Shop',
                 amount: -4500,
+                memo: null,
                 cleared: 'uncleared',
-                category_name: 'Dining Out'
+                approved: false,
+                flag_color: null,
+                flag_name: null,
+                account_id: 'acc-1',
+                payee_id: 'payee-1',
+                category_id: 'cat-1',
+                transfer_account_id: null,
+                transfer_transaction_id: null,
+                matched_transaction_id: null,
+                import_id: null,
+                import_payee_name: null,
+                import_payee_name_original: null,
+                debt_transaction_type: null,
+                deleted: false,
+                account_name: 'Checking Account',
+                payee_name: 'Coffee Shop',
+                category_name: 'Dining Out',
+                subtransactions: []
               },
               {
                 id: 'txn-2',
                 date: '2025-08-19',
-                payee_name: 'Supermarket',
                 amount: -32100,
+                memo: null,
                 cleared: 'cleared', // This should be filtered out
-                category_name: 'Groceries'
+                approved: true,
+                flag_color: null,
+                flag_name: null,
+                account_id: 'acc-1',
+                payee_id: 'payee-2',
+                category_id: 'cat-2',
+                transfer_account_id: null,
+                transfer_transaction_id: null,
+                matched_transaction_id: null,
+                import_id: null,
+                import_payee_name: null,
+                import_payee_name_original: null,
+                debt_transaction_type: null,
+                deleted: false,
+                account_name: 'Checking Account',
+                payee_name: 'Supermarket',
+                category_name: 'Groceries',
+                subtransactions: []
               },
               {
                 id: 'txn-3',
                 date: '2025-08-18',
-                payee_name: 'Gas Station',
                 amount: -6500,
+                memo: null,
                 cleared: 'uncleared',
-                category_name: 'Transportation'
+                approved: false,
+                flag_color: null,
+                flag_name: null,
+                account_id: 'acc-1',
+                payee_id: 'payee-3',
+                category_id: 'cat-3',
+                transfer_account_id: null,
+                transfer_transaction_id: null,
+                matched_transaction_id: null,
+                import_id: null,
+                import_payee_name: null,
+                import_payee_name_original: null,
+                debt_transaction_type: null,
+                deleted: false,
+                account_name: 'Checking Account',
+                payee_name: 'Gas Station',
+                category_name: 'Transportation',
+                subtransactions: []
               }
             ]
           }
@@ -77,7 +128,7 @@ describe('YnabClient', () => {
 
       // Verify API call
       expect(axios.default.get).toHaveBeenCalledWith(
-        `https://api.youneedabudget.com/v1/budgets/${mockBudgetId}/transactions`,
+        `https://api.ynab.com/v1/budgets/${mockBudgetId}/transactions`,
         {
           headers: {
             Authorization: `Bearer ${mockToken}`
@@ -101,6 +152,51 @@ describe('YnabClient', () => {
       const transactions = await client.getUnclearedTransactions(mockBudgetId);
 
       expect(transactions).toEqual([]);
+    });
+
+    it('should handle transactions with missing payee_name and category_name', async () => {
+      const mockResponse = {
+        data: {
+          data: {
+            transactions: [
+              {
+                id: 'txn-1',
+                date: '2025-08-20',
+                amount: -4500,
+                memo: null,
+                cleared: 'uncleared',
+                approved: false,
+                flag_color: null,
+                flag_name: null,
+                account_id: 'acc-1',
+                payee_id: null,
+                category_id: null,
+                transfer_account_id: null,
+                transfer_transaction_id: null,
+                matched_transaction_id: null,
+                import_id: null,
+                import_payee_name: null,
+                import_payee_name_original: null,
+                debt_transaction_type: null,
+                deleted: false,
+                account_name: 'Checking Account',
+                payee_name: null, // Missing payee name
+                category_name: null, // Missing category name
+                subtransactions: []
+              }
+            ]
+          }
+        }
+      };
+
+      const axios = await import('axios');
+      vi.mocked(axios.default.get).mockResolvedValue(mockResponse);
+
+      const transactions = await client.getUnclearedTransactions(mockBudgetId);
+
+      expect(transactions).toHaveLength(1);
+      expect(transactions[0]?.payee_name).toBe('Unknown Payee');
+      expect(transactions[0]?.category_name).toBe('Uncategorized');
     });
 
     it('should throw error when API request fails', async () => {
@@ -145,7 +241,7 @@ describe('YnabClient', () => {
       await client.clearTransaction(mockBudgetId, 'txn-1');
 
       expect(axios.default.patch).toHaveBeenCalledWith(
-        `https://api.youneedabudget.com/v1/budgets/${mockBudgetId}/transactions/txn-1`,
+        `https://api.ynab.com/v1/budgets/${mockBudgetId}/transactions/txn-1`,
         {
           transaction: {
             cleared: 'cleared'

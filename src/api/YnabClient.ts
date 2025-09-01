@@ -1,14 +1,31 @@
 import axios, { AxiosError } from 'axios';
-import { Transaction } from '../types/Transaction.js';
+import type { Transaction } from '../types/Transaction.js';
 import { Amount } from '../types/Amount.js';
 
 interface YnabTransaction {
   id: string;
   date: string;
-  payee_name: string;
   amount: number;
+  memo?: string;
   cleared: 'cleared' | 'uncleared' | 'reconciled';
-  category_name: string;
+  approved: boolean;
+  flag_color?: string;
+  flag_name?: string;
+  account_id: string;
+  payee_id?: string;
+  category_id?: string;
+  transfer_account_id?: string;
+  transfer_transaction_id?: string;
+  matched_transaction_id?: string;
+  import_id?: string;
+  import_payee_name?: string;
+  import_payee_name_original?: string;
+  debt_transaction_type?: string;
+  deleted: boolean;
+  account_name: string;
+  payee_name?: string;
+  category_name?: string;
+  subtransactions: any[];
 }
 
 interface YnabTransactionsResponse {
@@ -18,7 +35,7 @@ interface YnabTransactionsResponse {
 }
 
 export class YnabClient {
-  private readonly baseUrl = 'https://api.youneedabudget.com/v1';
+  private readonly baseUrl = 'https://api.ynab.com/v1/';
   private readonly token: string;
 
   constructor(token: string) {
@@ -35,7 +52,7 @@ export class YnabClient {
 
     try {
       const response = await axios.get<YnabTransactionsResponse>(
-        `${this.baseUrl}/budgets/${budgetId}/transactions`,
+        `${this.baseUrl}budgets/${budgetId}/transactions`,
         {
           headers: {
             Authorization: `Bearer ${this.token}`
@@ -45,9 +62,12 @@ export class YnabClient {
 
       const ynabTransactions = response.data.data.transactions;
       
-      // Filter only uncleared transactions and transform to our format
+      // Filter only uncleared transactions (not deleted) and transform to our format
       return ynabTransactions
-        .filter(transaction => transaction.cleared === 'uncleared')
+        .filter(transaction => 
+          transaction.cleared === 'uncleared' && 
+          !transaction.deleted
+        )
         .map(this.transformYnabTransaction);
 
     } catch (error) {
@@ -75,7 +95,7 @@ export class YnabClient {
 
     try {
       await axios.patch(
-        `${this.baseUrl}/budgets/${budgetId}/transactions/${transactionId}`,
+        `${this.baseUrl}budgets/${budgetId}/transactions/${transactionId}`,
         {
           transaction: {
             cleared: 'cleared'
@@ -102,14 +122,14 @@ export class YnabClient {
     }
   }
 
-  private transformYnabTransaction(ynabTransaction: YnabTransaction): Transaction {
+  private transformYnabTransaction = (ynabTransaction: YnabTransaction): Transaction => {
     return {
       id: ynabTransaction.id,
       date: ynabTransaction.date,
-      payee_name: ynabTransaction.payee_name,
+      payee_name: ynabTransaction.payee_name || 'Unknown Payee',
       amount: Amount.fromMilliunits(ynabTransaction.amount),
       cleared: ynabTransaction.cleared,
-      category_name: ynabTransaction.category_name
+      category_name: ynabTransaction.category_name || 'Uncategorized'
     };
   }
 }

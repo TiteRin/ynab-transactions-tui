@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "tsx src/cli.tsx",
     "test": "vitest",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node build/cli.js",
+    "clean": "rm -rf build"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
   "homepage": "https://github.com/TiteRin/ynab-transactions-tui#readme",
   "dependencies": {
     "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
     "ink": "^6.2.3",
     "react": "^19.1.1"
   },
